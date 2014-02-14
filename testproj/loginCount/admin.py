@@ -28,26 +28,4 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ['username']
 
 
-    '''
-class ChoiceInline(admin.StackedInline): # TabularInline is more compact
-    model = Choice
-    extra = 3
-
-class PollAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None,               {'fields': ['question']}),
-        ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
-    ]
-    inlines = [ChoiceInline]
-    list_display = ('question', 'pub_date', 'was_published_recently')
-    #Filter sidebar filters by the pub_date field; type filtered by is django auto
-    list_filter = ['pub_date']
-    #adds search bar to top of list, searchs question field
-    search_fields = ['question']
-    
-    #err0r: date_hierarchy = 'pub_date'
-
-admin.site.register(Poll, PollAdmin)
-    '''
-
 admin.site.register(UserModel, UserAdmin)
