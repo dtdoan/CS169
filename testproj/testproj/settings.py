@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import psycopg2
+import urlparse
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 #default to empty
@@ -63,6 +65,7 @@ WSGI_APPLICATION = 'testproj.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
+        #postgresql_psycopg2',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
@@ -85,3 +88,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+#import dj_database_url
+#DATABASES['default'] = dj_database_url.config()
+

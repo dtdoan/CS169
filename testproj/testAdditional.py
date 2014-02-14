@@ -7,6 +7,7 @@ import unittest
 import os
 import testLib
 
+'''
 class TestUnit(testLib.RestTestCase):
     """Issue a REST API request to run the unit tests, and analyze the result"""
     def testUnit(self):
@@ -23,7 +24,7 @@ class TestUnit(testLib.RestTestCase):
         self.assertTrue(respData['totalTests'] >= minimumTests,
                         "at least "+str(minimumTests)+" unit tests. Found only "+str(respData['totalTests'])+". use SAMPLE_APP=1 if this is the sample app")
         self.assertEquals(0, respData['nrFailed'])
-
+            '''
 
         
 class TestAddUser(testLib.RestTestCase):
@@ -41,6 +42,20 @@ class TestAddUser(testLib.RestTestCase):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
 
+    def testAddDouble(self):
+        respData1 = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        respData2= self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData1, count =1)
+        self.assertResponse(respData2, errCode = testLib.RestTestCase.ERR_USER_EXISTS, count = None)
+
+    def testAddEmptyUserName(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : '', 'password' : 'password'} )
+        self.assertResponse(respData, count = None, errCode = testLib.RestTestCase.ERR_BAD_USERNAME)
+
+    def testAddEmptyPassword(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : ''} )
+        self.assertResponse(respData, count = None, errCode = testLib.RestTestCase.ERR_BAD_PASSWORD)
+
 
 class TestLoginUser(testLib.RestTestCase):
     """Test logging in a returning users"""
@@ -57,30 +72,21 @@ class TestLoginUser(testLib.RestTestCase):
         respData = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
 
-
-
-
-
-    
-class TestLoginUserDNE(testLib.RestTestCase):
-    """Test logging in a new user which does not already exist in the database"""
-    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.SUCCESS):
-        """
-        Check that the response data dictionary matches the expected values
-        """
-        expected = { 'errCode' : errCode }
-        if count is not None:
-            expected['count']  = count
-        self.assertDictEqual(expected, respData)
-
-    def testAdd1(self):
+    def testLoginIncrement(self):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData2,  count =2 )
 
+    def testLoginWrongPassword(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'WRONGHAHAHAHAH'} )
+        self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
 
-
-
-
-
-
+    def testLoginEmptyUserName(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'WHATSMYNAME', 'password' : 'WRONGHAHAHAHAH'} )
+        self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
 

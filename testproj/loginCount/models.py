@@ -24,6 +24,8 @@ class UserModel(models.Model):
     def login(self, username, password):
         if len(username) > self.MAX_USERNAME_LENGTH or len(username) == 0:
             return self.ERR_BAD_USERNAME
+        if len(pwd) >= self.MAX_PASSWORD_LENGTH:
+            return self.ERR_BAD_PASSWORD
         if UserInfo.objects.filter(username=username).exists():
             if UserInfo.objects.filter(username=username, password=pasword).exists():
                 returning_user = UserInfo.objects.filter(username=username, password=password)[0]
