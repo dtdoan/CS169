@@ -45,8 +45,7 @@ class TestUsers(unittest.TestCase):
         """
         Tests that adding an user with a username longer than 128 fails
         """
-        self.assertEquals(UserModel.ERR_BAD_USERNAME, self.users.add("abcdefghijklmnopqrstuvwxyz
-            abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy",
+        self.assertEquals(UserModel.ERR_BAD_USERNAME, self.users.add("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy",
             "password"))
 
     def testLoginSuccessful(self): 

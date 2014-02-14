@@ -64,11 +64,12 @@ WSGI_APPLICATION = 'testproj.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        #postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+#import dj_database_url 
+#DATABASES['default'] = dj_database_url.config()
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -89,6 +90,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-#import dj_database_url
-#DATABASES['default'] = dj_database_url.config()
+import dj_database_url
+DATABASES['default'] = dj_database_url.config()
 

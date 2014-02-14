@@ -7,7 +7,6 @@ import unittest
 import os
 import testLib
 
-'''
 class TestUnit(testLib.RestTestCase):
     """Issue a REST API request to run the unit tests, and analyze the result"""
     def testUnit(self):
@@ -24,9 +23,9 @@ class TestUnit(testLib.RestTestCase):
         self.assertTrue(respData['totalTests'] >= minimumTests,
                         "at least "+str(minimumTests)+" unit tests. Found only "+str(respData['totalTests'])+". use SAMPLE_APP=1 if this is the sample app")
         self.assertEquals(0, respData['nrFailed'])
-            '''
-
         
+
+       
 class TestAddUser(testLib.RestTestCase):
     """Test adding users"""
     def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.SUCCESS):
@@ -48,12 +47,20 @@ class TestAddUser(testLib.RestTestCase):
         self.assertResponse(respData1, count =1)
         self.assertResponse(respData2, errCode = testLib.RestTestCase.ERR_USER_EXISTS, count = None)
 
-    def testAddEmptyUserName(self):
+    def testAddEmptyUsername(self):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : '', 'password' : 'password'} )
         self.assertResponse(respData, count = None, errCode = testLib.RestTestCase.ERR_BAD_USERNAME)
 
     def testAddEmptyPassword(self):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : ''} )
+        self.assertResponse(respData, count = None, errCode = testLib.RestTestCase.ERR_BAD_PASSWORD)
+
+    def testAddTooLongUsername(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy', 'password' : 'password'} )
+        self.assertResponse(respData, count = None, errCode = testLib.RestTestCase.ERR_BAD_USERNAME)
+
+    def testAddTooLongPassword(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy'} )
         self.assertResponse(respData, count = None, errCode = testLib.RestTestCase.ERR_BAD_PASSWORD)
 
 
@@ -72,21 +79,39 @@ class TestLoginUser(testLib.RestTestCase):
         respData = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
 
-    def testLoginIncrement(self):
+    def testLoginAfterAdd(self):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
         respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData2,  count =2 )
 
-    def testLoginWrongPassword(self):
+    def testLoginNullUsername(self):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
-        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'WRONGHAHAHAHAH'} )
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : '', 'password' : 'password'} )
         self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
 
-    def testLoginEmptyUserName(self):
+    def testLoginTooLongUsername(self):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
-        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'WHATSMYNAME', 'password' : 'WRONGHAHAHAHAH'} )
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy', 'password' : 'password'} )
+        self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
+
+    def testLoginBadPassword(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'badpassword'} )
+        self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
+
+    def testLoginNullPassword(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : ''} )
+        self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
+
+    def testLoginTooLongPassword(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+        respData2 = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy'} )
         self.assertResponse(respData2,  errCode = testLib.RestTestCase.ERR_BAD_CREDENTIALS, count=None)
 

@@ -45,10 +45,6 @@ class UserModel(models.Model):
         if UserInfo.objects.filter(username=usrn).exists():
             return self.ERR_USER_EXISTS
         user_added = UserInfo(username=usrn, password=pwd, count=1)
-        #username=username, password=password
-        #user_added.username = usrn
-       # user_added.password = pwd
-       # user_added.count = 1
         new_user.save()
         return self.SUCCESS
         
