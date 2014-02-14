@@ -41,4 +41,46 @@ class TestAddUser(testLib.RestTestCase):
         respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
         self.assertResponse(respData, count = 1)
 
+
+class TestLoginUser(testLib.RestTestCase):
+    """Test logging in a returning users"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.SUCCESS):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testAdd1(self):
+        respData = self.makeRequest("/users/login", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+
+
+
+
+
     
+class TestLoginUserDNE(testLib.RestTestCase):
+    """Test logging in a new user which does not already exist in the database"""
+    def assertResponse(self, respData, count = 1, errCode = testLib.RestTestCase.SUCCESS):
+        """
+        Check that the response data dictionary matches the expected values
+        """
+        expected = { 'errCode' : errCode }
+        if count is not None:
+            expected['count']  = count
+        self.assertDictEqual(expected, respData)
+
+    def testAdd1(self):
+        respData = self.makeRequest("/users/add", method="POST", data = { 'user' : 'user1', 'password' : 'password'} )
+        self.assertResponse(respData, count = 1)
+
+
+
+
+
+
+
+

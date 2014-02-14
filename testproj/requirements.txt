@@ -1,0 +1,4 @@
+Django==1.6.2
+dj-database-url==0.2.2
+psycopg2==2.5.2
+virtualenv==1.11.2

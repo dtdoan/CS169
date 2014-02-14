@@ -1,10 +1,11 @@
 from django.db import models
 
-class UserModel(models.Model):
+class UserInfo(models.Model):
     username = models.CharField(max_length=128)
     password = models.CharField(max_length=128)
     count = models.IntegerField(default=1)
 
+class UserModel(models.Model):
     ## The success return code
     SUCCESS               =   1
     ## Cannot find the user/password pair in the database (for login only)
@@ -21,10 +22,12 @@ class UserModel(models.Model):
     MAX_PASSWORD_LENGTH = 128
 
     def login(self, username, password):
-        if UserModel.objects.filter(username=username).exists():
-            if UserModel.objects.filter(username=username, password=pasword).exists():
-                returning_user = UserModel.objects.filter(username=username, password=password)[0]
-                returning_user.count =+ 1
+        if len(username) > self.MAX_USERNAME_LENGTH or len(username) == 0:
+            return self.ERR_BAD_USERNAME
+        if UserInfo.objects.filter(username=username).exists():
+            if UserInfo.objects.filter(username=username, password=pasword).exists():
+                returning_user = UserInfo.objects.filter(username=username, password=password)[0]
+                returning_user.count = returning_user.count + 1
                 returning_user.save()
                 return self.SUCCESS
             else:
@@ -32,26 +35,30 @@ class UserModel(models.Model):
         else:
             return self.ERR_BAD_CREDENTIALS
 
-    def add(self, username, password):
-        if len(username) >= self.MAX_USERNAME_LENGTH or len(username):
+    def add(self, usrn, pwd):
+        if len(usrn) > self.MAX_USERNAME_LENGTH or len(usrn) == 0:
             return self.ERR_BAD_USERNAME
-        if len(password) >= self.MAX_PASSWORD_LENGTH:
+        if len(pwd) >= self.MAX_PASSWORD_LENGTH:
             return self.ERR_BAD_PASSWORD
-        if UserModel.objects.filter(username=username).exists():
+        if UserInfo.objects.filter(username=usrn).exists():
             return self.ERR_USER_EXISTS
-        user_added = UserModel(username=username, password=password, count=1)
+        user_added = UserInfo(username=usrn, password=pwd, count=1)
+        #username=username, password=password
+        #user_added.username = usrn
+       # user_added.password = pwd
+       # user_added.count = 1
         new_user.save()
         return self.SUCCESS
         
     def __init__(self):
-        self._reset()       
+        pass       
     
     def __unicode__(self):
         return self.username
 
     # Used from constructor and self test
     def _reset(self):
-        UserData.objects.all().delete()
+        UserInfo.objects.all().delete()
 
     def TESTAPI_resetFixture(self):
         """
