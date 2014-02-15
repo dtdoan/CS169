@@ -40,7 +40,6 @@ class TestUsers(unittest.TestCase):
         self.assertEquals(UserModel.ERR_BAD_USERNAME, self.users.add("", "password"))
 
 
-    '''
     def testAddUsername128long(self): 
         """
         Tests that adding an user with a username longer than 128 fails
@@ -106,7 +105,7 @@ class TestUsers(unittest.TestCase):
         """
         self.assertEquals(UsersModel.ERR_BAD_CREDENTIALS, self.users.login("user10", "password10"))
         self.assertEquals(UsersModel.SUCCESS, self.users.add("user10", "password10"))
-        '''
+
 
 
 # If this file is invoked as a Python script, run the tests in this module
