@@ -14,6 +14,8 @@ import psycopg2
 import urlparse
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+IS_LOCALHOST = not "DATABASE_URL" in os.environ
+
 #default to empty
 TEMPLATE_DIRS = (
     'C:/Python27/django/CS169/testproj/mytemplates/', #always use forward slash
@@ -30,7 +32,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['']
 
 
 # Application definition
@@ -71,6 +73,22 @@ WSGI_APPLICATION = 'testproj.wsgi.application'
 #import dj_database_url 
 #DATABASES['default'] = dj_database_url.config()
 
+if IS_LOCALHOST:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'loginCounter.db',
+        }
+    }
+else:
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+
+import sys
+if 'test' in sys.argv:
+    print "======================YOU ARE IN A TEST======================"
+    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
@@ -90,6 +108,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-import dj_database_url
-DATABASES['default'] = dj_database_url.config()
-
+#import dj_database_url
+#DATABASES['default'] = dj_database_url.config()
